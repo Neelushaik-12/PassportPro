@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+
+# Environment variables
+.env
+backend/.env
+
+# User data (sensitive)
+users.json
+backend/users.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Personal/deployment-specific scripts (optional - uncomment if you don't want to share)
+# fix_email_secrets_permissions.sh
+# fix_secret_names.sh
+# test_email.py
+

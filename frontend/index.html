@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passport Pro - Professional Passport Photos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .upload-area:hover {
+            background: #f0f2ff;
+            border-color: #764ba2;
+        }
+
+        .upload-area.dragover {
+            background: #e8ebff;
+            border-color: #764ba2;
+            transform: scale(1.01);
+        }
+
+        .upload-icon {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 1em;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .upload-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .camera-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .camera-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .camera-btn:active {
+            transform: translateY(0);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* Camera Modal */
+        .camera-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .camera-modal.active {
+            display: flex;
+        }
+
+        .camera-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .camera-video {
+            width: 100%;
+            max-width: 640px;
+            border-radius: 10px;
+            display: block;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .camera-btn-capture {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .camera-btn-capture:hover {
+            background: #764ba2;
+            transform: scale(1.1);
+        }
+
+        .camera-btn-close {
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .camera-btn-close:hover {
+            background: #e0e0e0;
+        }
+
+        .preview-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .preview-section.active {
+            display: block;
+        }
+
+        .preview-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .preview-box {
+            text-align: center;
+        }
+
+        .preview-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .preview-image {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 3px solid #e0e0e0;
+        }
+
+        .process-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px;
+        }
+
+        .process-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .process-btn:active {
+            transform: translateY(0);
+        }
+
+        .process-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #218838;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error.active {
+            display: block;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+
+        .info-box h3 {
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        .info-box li {
+            margin: 5px 0;
+        }
+
+        .country-selector {
+            margin-bottom: 30px;
+        }
+
+        .country-selector label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .country-select {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1em;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .country-select:hover {
+            border-color: #764ba2;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .country-select:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .country-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f2ff;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .preview-container {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1 style="margin: 0;">📸 Passport Pro</h1>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span id="userInfo" style="color: #666; font-size: 0.9em;"></span>
+                <button id="logoutBtn" class="btn-secondary" style="padding: 8px 20px; font-size: 0.9em; display: none;">Logout</button>
+            </div>
+        </div>
+        <p class="subtitle">Transform any photo into a professional passport photo</p>
+
+        <div class="info-box">
+            <h3>📋 Requirements</h3>
+            <ul>
+                <li>Front-facing photo with clear face visibility</li>
+                <li>Good lighting and contrast</li>
+                <li>Supported formats: JPG, PNG, WEBP</li>
+                <li>Output dimensions vary by country (see selector below)</li>
+            </ul>
+        </div>
+
+        <div class="country-selector">
+            <label for="countrySelect">🌍 Select Country:</label>
+            <select id="countrySelect" class="country-select">
+                <option value="">Loading countries...</option>
+            </select>
+            <div id="countryInfo" class="country-info" style="display: none;">
+                <strong>Specifications:</strong> <span id="countrySpecs">-</span>
+            </div>
+        </div>
+
+        <div class="upload-actions">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Click to upload or drag and drop</div>
+                <div class="upload-hint">Your photo will be processed with AI to remove background</div>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+            <button class="camera-btn" id="cameraBtn">
+                📷 Take Photo
+            </button>
+        </div>
+
+        <!-- Camera Modal -->
+        <div class="camera-modal" id="cameraModal">
+            <div class="camera-container">
+                <video id="cameraVideo" class="camera-video" autoplay playsinline></video>
+                <canvas id="cameraCanvas" style="display: none;"></canvas>
+                <div class="camera-controls">
+                    <button class="camera-btn-capture" id="captureBtn">📷</button>
+                    <button class="camera-btn-close" id="closeCameraBtn">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-section" id="previewSection">
+            <div class="preview-container">
+                <div class="preview-box">
+                    <div class="preview-label">Original Photo</div>
+                    <img id="originalPreview" class="preview-image" alt="Original">
+                </div>
+                <div class="preview-box">
+                    <div class="preview-label">Passport Ready</div>
+                    <img id="processedPreview" class="preview-image" alt="">
+                </div>
+            </div>
+            <button class="process-btn" id="processBtn">Process Photo</button>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing your photo ...</p>
+            </div>
+            <button class="download-btn" id="downloadBtn" style="display: none;">Download Passport Photo</button>
+        </div>
+
+        <div class="error" id="error"></div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const previewSection = document.getElementById('previewSection');
+        const originalPreview = document.getElementById('originalPreview');
+        const processedPreview = document.getElementById('processedPreview');
+        const processBtn = document.getElementById('processBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const loading = document.getElementById('loading');
+        const errorDiv = document.getElementById('error');
+
+        let currentFile = null;
+        let processedImageData = null;
+        let countries = [];
+        let selectedCountry = 'US';
+        // Use relative URL for API (works with same-origin deployment)
+        // Falls back to localhost for local development
+        const API_BASE = window.location.origin;
+
+        // Check authentication on page load
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/check`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.authenticated) {
+                    // User is logged in
+                    document.getElementById('userInfo').textContent = `Welcome, ${data.username}`;
+                    document.getElementById('logoutBtn').style.display = 'block';
+                    
+                    // Load user stats
+                    try {
+                        const statsResponse = await fetch(`${API_BASE}/api/auth/me`, {
+                            credentials: 'include'
+                        });
+                        const statsData = await statsResponse.json();
+                        if (statsData.success && statsData.user) {
+                            const stats = statsData.user;
+                            if (stats.photos_processed > 0) {
+                                document.getElementById('userInfo').textContent += ` (${stats.photos_processed} photos processed)`;
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error loading user stats:', e);
+                    }
+                } else {
+                    // Not logged in, redirect to login
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await fetch(`${API_BASE}/api/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Logout failed:', error);
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Check auth on page load
+        checkAuth();
+
+        // Load countries on page load
+        async function loadCountries() {
+            try {
+                const response = await fetch(`${API_BASE}/api/countries`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    countries = data.countries;
+                    const select = document.getElementById('countrySelect');
+                    select.innerHTML = '<option value="">Select a country...</option>';
+                    countries.forEach(country => {
+                        const option = document.createElement('option');
+                        option.value = country.code;
+                        option.textContent = country.name;
+                        if (country.code === 'US') {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+                    updateCountryInfo();
+                }
+            } catch (error) {
+                console.error('Error loading countries:', error);
+                document.getElementById('countrySelect').innerHTML = '<option value="US">United States</option>';
+            }
+        }
+
+        // Update country info display
+        function updateCountryInfo() {
+            const select = document.getElementById('countrySelect');
+            selectedCountry = select.value || 'US';
+            const country = countries.find(c => c.code === selectedCountry);
+            const infoDiv = document.getElementById('countryInfo');
+            const specsSpan = document.getElementById('countrySpecs');
+            
+            if (country) {
+                fetch(`${API_BASE}/api/countries/${selectedCountry}/specs`, {
+                    credentials: 'include'
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            const specs = data.specs;
+                            // Display in mm (primary) and pixels (secondary)
+                            specsSpan.textContent = `${specs.width_mm}mm × ${specs.height_mm}mm (${specs.width_px}×${specs.height_px}px at ${specs.dpi} DPI)`;
+                            infoDiv.style.display = 'block';
+                        }
+                    })
+                    .catch(() => {
+                        infoDiv.style.display = 'none';
+                    });
+            } else {
+                infoDiv.style.display = 'none';
+            }
+        }
+
+        // Country selector change
+        document.getElementById('countrySelect').addEventListener('change', updateCountryInfo);
+
+        // Load countries when page loads
+        loadCountries();
+
+        // Camera functionality
+        const cameraBtn = document.getElementById('cameraBtn');
+        const cameraModal = document.getElementById('cameraModal');
+        const cameraVideo = document.getElementById('cameraVideo');
+        const cameraCanvas = document.getElementById('cameraCanvas');
+        const captureBtn = document.getElementById('captureBtn');
+        const closeCameraBtn = document.getElementById('closeCameraBtn');
+        let cameraStream = null;
+
+        // Open camera modal
+        cameraBtn.addEventListener('click', async () => {
+            try {
+                // Request camera access
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'user', // Front-facing camera
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                });
+                
+                cameraVideo.srcObject = cameraStream;
+                cameraModal.classList.add('active');
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                showError('Could not access camera. Please check permissions or use upload instead.');
+            }
+        });
+
+        // Close camera modal
+        closeCameraBtn.addEventListener('click', () => {
+            stopCamera();
+        });
+
+        // Capture photo
+        captureBtn.addEventListener('click', () => {
+            const context = cameraCanvas.getContext('2d');
+            cameraCanvas.width = cameraVideo.videoWidth;
+            cameraCanvas.height = cameraVideo.videoHeight;
+            
+            // Draw video frame to canvas
+            context.drawImage(cameraVideo, 0, 0);
+            
+            // Convert canvas to blob
+            cameraCanvas.toBlob((blob) => {
+                if (blob) {
+                    // Create a File object from the blob
+                    const file = new File([blob], 'camera-photo.jpg', { type: 'image/jpeg' });
+                    
+                    // Use the same file handling as upload
+                    handleFile(file);
+                    
+                    // Close camera
+                    stopCamera();
+                }
+            }, 'image/jpeg', 0.95);
+        });
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            cameraVideo.srcObject = null;
+            cameraModal.classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        cameraModal.addEventListener('click', (e) => {
+            if (e.target === cameraModal) {
+                stopCamera();
+            }
+        });
+
+        // Upload area click
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showError('Please select an image file');
+                return;
+            }
+
+            currentFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                originalPreview.src = e.target.result;
+                previewSection.classList.add('active');
+                processedPreview.src = '';
+                downloadBtn.style.display = 'none';
+                processedImageData = null;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        processBtn.addEventListener('click', async () => {
+            if (!currentFile) {
+                showError('Please select an image first');
+                return;
+            }
+
+            // Get current selected country
+            const countrySelect = document.getElementById('countrySelect');
+            const currentCountry = countrySelect.value || 'US';
+            
+            console.log('Processing photo for country:', currentCountry);
+
+            processBtn.disabled = true;
+            loading.classList.add('active');
+            errorDiv.classList.remove('active');
+            downloadBtn.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('file', currentFile);
+            formData.append('country', currentCountry);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/process-passport-photo`, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    let errorMessage = 'Failed to process image';
+                    try {
+                        const error = await response.json();
+                        // Handle different error formats
+                        if (error.detail) {
+                            if (Array.isArray(error.detail)) {
+                                errorMessage = error.detail.map(e => e.msg || e).join(', ');
+                            } else {
+                                errorMessage = error.detail;
+                            }
+                        } else if (error.message) {
+                            errorMessage = error.message;
+                        } else if (error.error) {
+                            errorMessage = error.error;
+                        }
+                    } catch (e) {
+                        errorMessage = `Server error: ${response.status} ${response.statusText}`;
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    processedPreview.src = data.image;
+                    processedImageData = data.image;
+                    downloadBtn.style.display = 'block';
+                } else {
+                    throw new Error('Processing failed');
+                }
+            } catch (error) {
+                showError(error.message || 'An error occurred while processing the image');
+            } finally {
+                processBtn.disabled = false;
+                loading.classList.remove('active');
+            }
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            if (!processedImageData) return;
+
+            const link = document.createElement('a');
+            link.href = processedImageData;
+            link.download = 'passport-photo.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

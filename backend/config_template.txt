@@ -1,0 +1,38 @@
+# Copy this file to .env in the backend directory and fill in your values
+
+# Google GenAI API Key (from OAuth application or API credentials)
+# Get this from: Google Cloud Console → APIs & Services → Credentials
+GOOGLE_API_KEY=your-api-key-here
+
+# Vertex AI Configuration
+GOOGLE_CLOUD_PROJECT_ID=your-project-id
+GOOGLE_CLOUD_LOCATION=us-central1
+
+# Optional: Model Configuration (Vertex AI)
+# Vertex AI model names: gemini-1.5-pro, gemini-1.5-flash, gemini-pro
+MODEL_NAME=gemini-1.5-pro
+IMAGEN_MODEL=imagen-3.0-capability-001
+
+# Email Notification Configuration
+# Admin email to receive notifications when photos are processed
+# For production, store in Secret Manager as 'admin-email'
+ADMIN_EMAIL=admin@yourdomain.com
+
+# SMTP Configuration (for email notifications)
+# Gmail configuration example
+# For production, store these in Secret Manager:
+#   - smtp-server, smtp-port, smtp-username, smtp-password
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your-email@gmail.com
+# SMTP_PASSWORD - DO NOT PUT PASSWORD HERE!
+# Store it in Secret Manager: ./setup_email_secrets.sh
+# Or set as environment variable: SMTP_PASSWORD=your-app-password
+
+# Note: For Gmail, use an App Password (not your regular password)
+# App Name: PassportPro
+# Generate at: https://myaccount.google.com/apppasswords
+
+# Note: If you don't have a Google Cloud project set up, the app will still work
+# using fallback background removal methods (no Vertex AI required)
+
